@@ -1,20 +1,31 @@
-// app/api/add-note/route.js
-import { getAuth } from "@clerk/nextjs/server";
-import db from "@/lib/db";
+import { supabase } from '@/lib/supabase';
+import { getAuth } from '@clerk/nextjs/server';
 
 export async function POST(request) {
-  const { userId } = getAuth(request); // <- pass the request
+  const { userId } = getAuth(request); 
   if (!userId) {
     return new Response(
       JSON.stringify({ error: "Unauthorized" }),
       { status: 401 }
     );
   }
+
   const { text } = await request.json();
   const timestamp = new Date().toISOString();
 
-  db.prepare(`INSERT INTO notes (userId, text, timestamp) VALUES (?, ?, ?)`)
-    .run(userId, text, timestamp);
+  const { error } = await supabase
+    .from('notes')
+    .insert([{ userId, text, timestamp }]);
 
-  return new Response(JSON.stringify({ success: true }), { status: 200 });
+  if (error) {
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { status: 500 }
+    );
+  }
+
+  return new Response(
+    JSON.stringify({ success: true }),
+    { status: 200 }
+  );
 }
