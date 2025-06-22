@@ -10,6 +10,7 @@ export async function getSummaryFromGroq(prompt) {
       messages: [{ role: 'user', content: prompt }],
     }),
   });
+  console.log('Groq raw response:', res)
 
   const data = await res.json();
   return data.choices[0]?.message?.content || 'No summary available.';
