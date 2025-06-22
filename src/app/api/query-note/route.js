@@ -37,7 +37,7 @@ export async function POST(request) {
     .map(n => `${n.timestamp}: ${n.text}`)
     .join('\n');
 
-  const prompt = `Given these notes:\n${context}\nAnswer this query: "${query}" like you're my second brain. be little exaggerating`;
+  const prompt = `Given these notes:\n${context}\nAnswer this query: "${query}" like you're my second brain. be little exaggerating but brief`;
   const summary = await getSummaryFromGroq(prompt);
 
   return new Response(
